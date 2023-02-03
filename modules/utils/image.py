@@ -27,7 +27,7 @@ class Image:
     def __repr__(self):
         return self.name
 
-    def digest(self, cache=False):
+    def digest(self):
         log.info("Getting for digest for %s", self.name)
         cmd = [
                 "skopeo",
@@ -48,7 +48,9 @@ class Image:
         manifest_json = json.loads(manifest.stdout)
         # TODO: The manifests format returned from the inspect command is inconsistent, so we should build more flexiblity into this
         try:
+            object.__setattr__(self, "digest", manifest_json["config"]["digest"])
             return manifest_json["config"]["digest"]
+
         except KeyError:
             log.info("Error parsing digest for %s", self.name)
             return None
@@ -61,6 +63,6 @@ class Image:
 
     @classmethod
     def new_registry(cls, image, registry, secure):
-        name = image.name.split("/")
+        name = image.split("/")
         name[0] = registry
         return cls("/".join(name), secure)
