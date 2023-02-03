@@ -1,0 +1,6 @@
+destination:
+  registry: localhost:5000
+  secure: true
+exclude: []
+images: []
+include: []
