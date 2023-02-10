@@ -1,5 +1,6 @@
 import subprocess
 import sys
+from ironbank.pipeline.utils.exceptions import GenericSubprocessError
 from ironbank.pipeline.container_tools.cosign import Cosign
 from .utils.config import Config
 from .utils.image import Image
@@ -17,18 +18,22 @@ class Transfer:
 
     @classmethod
     def _cosign_verify(cls, image: Image):
-        if image.registry() == "registry1.dso.mil" and image.repo().split("/")[0] == "ironbank":
-            return Cosign.verify(image.name, cls.cosign_pubkey, log_cmd=True)
-        else: 
-            log.info("Skipping verification of image %s", image)
-            return True
+        try:            
+            verify = Cosign.verify(image.name, cls.cosign_pubkey, log_cmd=True)
+        except GenericSubprocessError:
+            verify = False  
+        return verify
 
     def execute(self):
         total_images = len(self.images)
         count = 0
         for source in self.images:
             count += 1
-            if self._cosign_verify(source):
+            proceed = True
+            if source.registry() == "registry1.dso.mil" and source.repo().split("/")[0] == "ironbank":
+                proceed = self._cosign_verify(source)
+                
+            if proceed:
                 destination = Image.new_registry(source, self.registry, self.secure)
                 cmd = [
                     "skopeo",
@@ -48,4 +53,4 @@ class Transfer:
                 else:
                     log.info("Source and destination digests match, skipping sync for %s", source.name)
             else:
-                log.info("Image %s failed verification!!", source)
+                log.info("Image skipped due to failed cosign verification: %s", source.name)
