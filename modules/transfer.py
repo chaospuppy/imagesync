@@ -16,10 +16,9 @@ class Transfer:
         self.images: [Image] = config.images
         self.cosign_pubkey = config.cosign_pubkey
 
-    @classmethod
-    def _cosign_verify(cls, image: Image):
+    def _cosign_verify(self, image: Image):
         try:            
-            verify = Cosign.verify(image.name, cls.cosign_pubkey, log_cmd=True)
+            verify = Cosign.verify(image, self.cosign_pubkey, log_cmd=True)
         except GenericSubprocessError:
             verify = False  
         return verify
