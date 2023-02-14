@@ -1,5 +1,5 @@
 import subprocess
-import sys
+from pathlib import Path 
 from ironbank.pipeline.utils.exceptions import GenericSubprocessError
 from ironbank.pipeline.container_tools.cosign import Cosign
 from .utils.config import Config
@@ -14,11 +14,10 @@ class Transfer:
         self.registry: str = config.destination["registry"]
         self.secure: bool = config.destination["secure"]
         self.images: [Image] = config.images
-        self.cosign_pubkey = config.cosign_pubkey
 
     def _cosign_verify(self, image: Image):
         try:            
-            verify = Cosign.verify(image, self.cosign_pubkey, log_cmd=True)
+            verify = Cosign.verify(image, pubkey=Path("cosign.pub"), log_cmd=True)
         except GenericSubprocessError:
             verify = False  
         return verify
