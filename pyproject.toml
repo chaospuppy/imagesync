@@ -8,6 +8,7 @@ authors = ["Tim Seagren <seagren.tim@solute.us>"]
 python = "^3.10"
 PyYAML = "^6.0"
 requests = "^2.28.1"
+ibmodules = {git = "https://repo1.dso.mil/ironbank-tools/ironbank-pipeline.git", rev = "master"}
 
 [tool.poetry.dev-dependencies]
 neovim = "^0.3.1"

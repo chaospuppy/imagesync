@@ -1,6 +1,7 @@
 FROM quay.io/skopeo/stable:latest
 
 ARG KUBECTL_VERSION="v1.23.5"
+ARG COSIGN_VERSION="1.13.1"
 
 ARG ARCH="x86_64"
 ARG ARCH_ALT="amd64"
@@ -8,6 +9,7 @@ ARG OS="linux"
 
 RUN mkdir /app /root/.kube/ \
   && dnf install unzip -y \
+  && rpm -ivh "https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign-${COSIGN_VERSION}.${ARCH}.rpm" \
   && curl "https://awscli.amazonaws.com/awscli-exe-linux-${ARCH}.zip" -o "awscliv2.zip" \
   && unzip awscliv2.zip \
   && ./aws/install
