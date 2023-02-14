@@ -39,8 +39,8 @@ docker run \
 -v ${HOME}/.docker/:/root/.docker/ \
 -v ${HOME}/.aws/:/root/.aws/ \
 -v ${HOME}/.kube/config:/root/.kube/config \
--v ${PWD}/../../ecr.yaml:/app/ecr.yaml \
+-v ${PWD}/images.yaml:/app/images.yaml \
 --rm imagesync:latest \
--f /app/ecr.yaml \
+-f /app/images.yaml \
 --help
 ```

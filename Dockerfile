@@ -7,6 +7,8 @@ ARG ARCH="x86_64"
 ARG ARCH_ALT="amd64"
 ARG OS="linux"
 
+ENV REGISTRY_AUTH_FILE=/root/.docker/config.json
+
 RUN mkdir /app /root/.kube/ \
   && dnf install unzip -y \
   && rpm -ivh "https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign-${COSIGN_VERSION}.${ARCH}.rpm" \
