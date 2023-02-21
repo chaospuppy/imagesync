@@ -6,6 +6,7 @@ from modules.utils import logger
 
 log: logger = logger.setup(name="Image")
 
+
 @dataclass(frozen=True)
 class Image:
     name: str
@@ -29,15 +30,10 @@ class Image:
 
     def digest(self, cache=False):
         log.info("Getting for digest for %s", self.name)
-        cmd = [
-                "skopeo",
-                "inspect",
-                "--raw",
-                f"docker://{self.name}"
-            ]
+        cmd = ["skopeo", "inspect", "--raw", f"docker://{self.name}"]
 
         if not self.secure:
-          cmd += ["--tls-verify=false"]
+            cmd += ["--tls-verify=false"]
 
         try:
             manifest = subprocess.run(cmd, capture_output=True, check=True)

@@ -20,7 +20,9 @@ class Config(yaml.YAMLObject):
             setattr(self, k, v)
 
     def clean(self):
-        self.images = sorted(list({Image(image.name) for image in self.images}), key=lambda x: x.name)
+        self.images = sorted(
+            list({Image(image.name) for image in self.images}), key=lambda x: x.name
+        )
 
     def find_unused_images(self, used_images: [Image]) -> [Image]:
         return [image for image in self.images if image not in used_images]
