@@ -22,7 +22,7 @@ jobs:
         run: ARCH=amd64 make build
         if: ${{ github.ref_type == 'tag' }}
       - name: push-image-amd64-tags
-        run: ARCH=arm64 IMAGE_REPO='docker.io/chaospuppy' IMAGE_NAME='imagesync' make push-image
+        run: ARCH=amd64 IMAGE_REPO='docker.io/chaospuppy' IMAGE_NAME='imagesync' make push-image
         if: ${{ github.ref_type == 'tag' }}
       - name: push-latest-tag-version
         run: ARCH=amd64 IMAGE_REPO='docker.io/chaospuppy' IMAGE_NAME='imagesync' make push-latest-tag
@@ -34,7 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: create-artifact
-        run: make artifact
+        run: ARCH=amd64 make artifact
         if: ${{ github.ref_type == 'tag' }}
       - name: create-release
         uses: "marvinpinto/action-automatic-releases@latest"
