@@ -7,7 +7,9 @@ ENV REGISTRY_AUTH_FILE=/root/.docker/config.json
 
 RUN mkdir /app /root/.kube/ \
   && dnf install unzip -y \
-  && curl -LO "https://github.com/sigstore/cosign/releases/download/v1.13.1/cosign-linux-arm64" \
+  && curl -LO "https://github.com/sigstore/cosign/releases/download/v1.13.1/cosign-linux-amd64" \
+  && chmod 755 cosign-linux-amd64 \
+  && mv cosign-linux-arm64 /usr/local/bin/cosign \
   && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
   && unzip awscliv2.zip \
   && ./aws/install
