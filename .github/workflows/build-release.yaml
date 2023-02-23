@@ -29,8 +29,6 @@ jobs:
         if: ${{ github.ref_type == 'tag' }}
   release:
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
     steps:
       - uses: actions/checkout@v2
       - name: create-artifact
