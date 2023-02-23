@@ -25,7 +25,7 @@ jobs:
         run: ARCH=amd64 IMAGE_REPO='docker.io/chaospuppy' IMAGE_NAME='imagesync' make push-image
         if: ${{ github.ref_type == 'tag' }}
       - name: push-latest-tag-version
-        run: ARCH=amd64 IMAGE_REPO='docker.io/chaospuppy' IMAGE_NAME='imagesync' make push-latest-tag
+        run: ARCH=amd64 IMAGE_REPO='docker.io/chaospuppy' IMAGE_NAME='imagesync' make push-latest-tag-version
         if: ${{ github.ref_type == 'tag' }}
   release:
     runs-on: ubuntu-latest
@@ -34,7 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: create-artifact
-        run: ARCH=amd64 ARCH=amd64 IMAGE_REPO='docker.io/chaospuppy' IMAGE_NAME='imagesync' make artifact
+        run: ARCH=amd64 IMAGE_REPO='docker.io/chaospuppy' IMAGE_NAME='imagesync' make artifact
         if: ${{ github.ref_type == 'tag' }}
       - name: create-release
         uses: "marvinpinto/action-automatic-releases@latest"
