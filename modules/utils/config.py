@@ -6,7 +6,6 @@ from .image import Image
 
 class Config(yaml.YAMLObject):
     def __init__(self, images, include, exclude, **kwargs):
-
         # Convert images in config to Image type
         self.images = [Image(image["name"]) for image in images]
 
