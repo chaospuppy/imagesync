@@ -22,7 +22,9 @@ log: logger = logger.setup()
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Tool to create, maintain, and transfer images listed in images.yaml from multiple source registries to a single destination registry")
+    parser = argparse.ArgumentParser(
+        description="Tool to create, maintain, and transfer images listed in images.yaml from multiple source registries to a single destination registry"
+    )
     parser.add_argument(
         "-f",
         "--images-file",
@@ -33,7 +35,9 @@ def main():
     subparser = parser.add_subparsers(help="", dest="command")
 
     tidy_subparser = subparser.add_parser("tidy")
-    tidy_subparser.add_argument("version", help="version of BigBang to retrieve images for")
+    tidy_subparser.add_argument(
+        "version", help="version of BigBang to retrieve images for"
+    )
 
     sync_subparser = subparser.add_parser("sync")
     sync_subparser.add_argument(
@@ -102,12 +106,13 @@ def main():
         # Remove duplicated images
         config.clean()
 
-        filter_image_attr = lambda attr, image_list: [{attr:getattr(image, attr)} for image in image_list]
+        filter_image_attr = lambda attr, image_list: [
+            {attr: getattr(image, attr)} for image in image_list
+        ]
         config_image_list_attributes = [
-            name for name,value in inspect.getmembers(config)
-            if isinstance(value, list)
-            and value
-            and isinstance(value[0], Image)
+            name
+            for name, value in inspect.getmembers(config)
+            if isinstance(value, list) and value and isinstance(value[0], Image)
         ]
         with open(args.images_file, "w") as f:
             for attr in config_image_list_attributes:
@@ -127,6 +132,7 @@ def main():
         except CalledProcessError as e:
             log.error(f"Error returned from transfer: {e.stderr}")
             sys.exit(1)
+
 
 if __name__ == "__main__":
     sys.exit(main())

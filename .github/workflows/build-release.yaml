@@ -1,0 +1,44 @@
+name: build-release
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - main
+jobs:
+  build-push-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: docker-login
+        run: echo "${{ secrets.CHAOSPUPPY_DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.CHAOSPUPPY_DOCKERHUB_USERNAME }} --password-stdin
+      - name: build-arm64-image
+        run: ARCH=arm64 make build
+        if: ${{ github.ref_type == 'tag' }}
+      - name: push-image-arm64-tags
+        run: ARCH=arm64 IMAGE_REPO='docker.io/chaospuppy' IMAGE_NAME='imagesync' make push-image
+        if: ${{ github.ref_type == 'tag' }}
+      - name: build-amd64-image
+        run: ARCH=amd64 make build
+        if: ${{ github.ref_type == 'tag' }}
+      - name: push-image-amd64-tags
+        run: ARCH=arm64 IMAGE_REPO='docker.io/chaospuppy' IMAGE_NAME='imagesync' make push-image
+        if: ${{ github.ref_type == 'tag' }}
+      - name: push-latest-tag-version
+        run: ARCH=amd64 IMAGE_REPO='docker.io/chaospuppy' IMAGE_NAME='imagesync' make push-latest-tag
+        if: ${{ github.ref_type == 'tag' }}
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: create-artifact
+        run: make artifact
+        if: ${{ github.ref_type == 'tag' }}
+      - name: create-release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.WORKFLOW_TOKEN }}"
+          prerelease: false
+          automatic_release_tag: ${{ env.GITHUB_REF_NAME }}
+          files: |
+            _build/imagesync.tar
+        if: ${{ github.ref_type == 'tag' }}

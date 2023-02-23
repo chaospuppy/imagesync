@@ -1,0 +1,29 @@
+FROM quay.io/skopeo/stable:latest
+
+ARG KUBECTL_VERSION="v1.23.5"
+ARG COSIGN_VERSION="1.13.1"
+
+ENV REGISTRY_AUTH_FILE=/root/.docker/config.json
+
+RUN mkdir /app /root/.kube/ \
+  && dnf install unzip -y \
+  && curl -LO "https://github.com/sigstore/cosign/releases/download/v1.13.1/cosign-linux-arm64" \
+  && chmod 755 cosign-linux-arm64 \
+  && mv cosign-linux-arm64 /usr/local/bin/cosign \
+  && curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip" \
+  && unzip awscliv2.zip \
+  && ./aws/install
+
+COPY . /app/
+WORKDIR /app/
+
+RUN curl -sSL https://install.python-poetry.org | python3 - \
+  && /root/.local/bin/poetry install --only main \
+  && curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/arm64/kubectl" \
+  && install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+RUN curl -LO https://amazon-ecr-credential-helper-releases.s3.us-east-2.amazonaws.com/0.6.0/linux-arm64/docker-credential-ecr-login \
+  && chmod 755 docker-credential-ecr-login \
+  && mv docker-credential-ecr-login /usr/local/bin/
+
+ENTRYPOINT ["/root/.local/bin/poetry", "run", "/app/imagesync.py"]
