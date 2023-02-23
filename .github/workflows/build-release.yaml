@@ -29,6 +29,8 @@ jobs:
         if: ${{ github.ref_type == 'tag' }}
   release:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
     steps:
       - name: create-artifact
         run: make artifact
@@ -41,6 +43,4 @@ jobs:
           automatic_release_tag: ${{ env.GITHUB_REF_NAME }}
           files: |
             _build/imagesync.tar
-        permissions:
-          packages: write
         if: ${{ github.ref_type == 'tag' }}
