@@ -21,6 +21,6 @@ push-latest-tag-version: VERSION
 
 artifact: build
 	mkdir -p _build/
-	docker save -o _build/imagesync.tar imagesync:latest
+	docker save -o _build/imagesync.tar imagesync:$(VERSION)-$(ARCH)
 
 .PHONY: build artifact push-image push-latest-tag-version

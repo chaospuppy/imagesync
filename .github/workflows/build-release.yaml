@@ -12,12 +12,12 @@ jobs:
       - uses: actions/checkout@v2
       - name: docker-login
         run: echo "${{ secrets.CHAOSPUPPY_DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.CHAOSPUPPY_DOCKERHUB_USERNAME }} --password-stdin
-      - name: build-arm64-image
-        run: ARCH=arm64 make build
-        if: ${{ github.ref_type == 'tag' }}
-      - name: push-image-arm64-tags
-        run: ARCH=arm64 IMAGE_REPO='docker.io/chaospuppy' IMAGE_NAME='imagesync' make push-image
-        if: ${{ github.ref_type == 'tag' }}
+      # - name: build-arm64-image
+      #   run: ARCH=arm64 make build
+      #   if: ${{ github.ref_type == 'tag' }}
+      # - name: push-image-arm64-tags
+      #   run: ARCH=arm64 IMAGE_REPO='docker.io/chaospuppy' IMAGE_NAME='imagesync' make push-image
+      #   if: ${{ github.ref_type == 'tag' }}
       - name: build-amd64-image
         run: ARCH=amd64 make build
         if: ${{ github.ref_type == 'tag' }}
@@ -32,6 +32,7 @@ jobs:
     permissions:
       packages: write
     steps:
+      - uses: actions/checkout@v2
       - name: create-artifact
         run: make artifact
         if: ${{ github.ref_type == 'tag' }}
