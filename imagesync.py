@@ -32,6 +32,13 @@ def main():
         default=pathlib.Path(os.path.dirname(__file__)).joinpath("images.yaml"),
     )
 
+    parser.add_argument(
+        "-k",
+        "--cosign-public-key",
+        help="Path to cosign.pub",
+        default=pathlib.Path(os.path.dirname(__file__)).joinpath("cosign.pub"),
+    )
+
     subparser = parser.add_subparsers(help="", dest="command")
 
     tidy_subparser = subparser.add_parser("tidy")
@@ -125,7 +132,7 @@ def main():
         if args.insecure:
             config.destination["secure"] = False
         # Instantiate Transfer
-        transferer = transfer.Transfer(config)
+        transferer = transfer.Transfer(config, pubkey=args.cosign_public_key)
         # Execute Transfer
         try:
             transferer.execute()
