@@ -35,7 +35,7 @@ def main():
     parser.add_argument(
         "-k",
         "--cosign-public-key",
-        help="Path to cosign.pub",
+        help="Path to cosign public key",
         default=pathlib.Path(os.path.dirname(__file__)).joinpath("cosign.pub"),
     )
 
