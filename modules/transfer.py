@@ -10,14 +10,15 @@ log: logger = logger.setup(name="transfer")
 
 
 class Transfer:
-    def __init__(self, config: Config):
+    def __init__(self, config: Config, pubkey: Path):
         self.registry: str = config.destination["registry"]
         self.secure: bool = config.destination["secure"]
         self.images: [Image] = config.images
+        self.cosign_public_key = pubkey
 
     def _cosign_verify(self, image: Image):
         try:
-            verify = Cosign.verify(image, pubkey=Path("cosign.pub"), log_cmd=True)
+            verify = Cosign.verify(image, pubkey=self.cosign_public_key, log_cmd=True)
         except GenericSubprocessError:
             verify = False
         return verify
