@@ -39,7 +39,7 @@ class Transfer:
                 False,
             )
             if cosign_registry:
-                proceed = self._cosign_verify(source, cosign_registry["key"])
+                proceed = self._cosign_verify(source, pubkey=cosign_registry["key"])
 
             if proceed:
                 destination = Image.new_registry(source, self.registry, self.secure)
