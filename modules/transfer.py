@@ -33,13 +33,16 @@ class Transfer:
                 (
                     item
                     for item in self.cosign_registries
-                    if item["registry"] == source.registry()
-                    and item["repo"] == source.repo().split("/")[0]
+                    if item.get("registry") == source.registry()
+                    and (
+                        item.get("repo") is None
+                        or item.get("repo") == source.repo().split("/")[0]
+                    )
                 ),
                 False,
             )
             if cosign_registry:
-                proceed = self._cosign_verify(source, pubkey=cosign_registry["key"])
+                proceed = self._cosign_verify(source, pubkey=cosign_registry.get("key"))
 
             if proceed:
                 destination = Image.new_registry(source, self.registry, self.secure)
