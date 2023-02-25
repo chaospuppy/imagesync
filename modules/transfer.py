@@ -10,15 +10,15 @@ log: logger = logger.setup(name="transfer")
 
 
 class Transfer:
-    def __init__(self, config: Config, pubkey: Path):
+    def __init__(self, config: Config):
         self.registry: str = config.destination["registry"]
         self.secure: bool = config.destination["secure"]
         self.images: [Image] = config.images
-        self.cosign_public_key = pubkey
+        self.cosign_registries = config.cosign
 
-    def _cosign_verify(self, image: Image):
+    def _cosign_verify(self, image: Image, pubkey: Path):
         try:
-            verify = Cosign.verify(image, pubkey=self.cosign_public_key, log_cmd=True)
+            verify = Cosign.verify(image, pubkey, log_cmd=True)
         except GenericSubprocessError:
             verify = False
         return verify
@@ -29,11 +29,17 @@ class Transfer:
         for source in self.images:
             count += 1
             proceed = True
-            if (
-                source.registry() == "registry1.dso.mil"
-                and source.repo().split("/")[0] == "ironbank"
-            ):
-                proceed = self._cosign_verify(source)
+            cosign_registry = next(
+                (
+                    item
+                    for item in self.cosign_registries
+                    if item["registry"] == source.registry()
+                    and item["repo"] == source.repo().split("/")[0]
+                ),
+                False,
+            )
+            if cosign_registry:
+                proceed = self._cosign_verify(source, cosign_registry["key"])
 
             if proceed:
                 destination = Image.new_registry(source, self.registry, self.secure)
