@@ -9,21 +9,21 @@ There are two main functions this script provides:
 ## Build
 The Dockerfile in this directory will create an image that has imagesync.py and all its dependencies available.
 
-To build the an image that is runnable on an AMD64 machine, execute the following command:
+To build the an image that is runnable on the architecture of your machine, execute the following command:
 ```bash
-docker build \
--t imagesync:latest \
-.
+make build
 ```
 
 To build the an image that is runnable on an ARM64 machine, execute the following command:
 
 ```bash
-docker build \
--t imagesync:$(cat VERSION)-arm64 \
---build-arg ARCH=aarch64 \
---build-arg ALT_ARCH=arm64 \
-.
+ARCH=arm64 make build
+```
+
+or for amd64
+
+```bash
+ARCH=amd64 make build
 ```
 
 ## Usage
@@ -31,13 +31,22 @@ The following sections describe how imagesync can be run using one of two method
 - Using the image built by the `Build` section of this README
 - Using the script directly
 
+### WSL
+If you are running WSL it is recommended that you download and setup[docker desktop wsl2 backend](https://docs.docker.com/desktop/windows/wsl/) and setup your folder structure on windows as:
+```bash
+C:\Users\{USER}\.docker
+```
+and on your WSL distro:
+```bash
+/home/{USER}/.docker
+```
+
 ## Image
 If you wish to use the image built by commands in the `Build` section of this README, you can run the following command:
 
 ```
 docker run \
 -v ${HOME}/.docker/:/root/.docker/ \
--v ${HOME}/.aws/:/root/.aws/ \
 -v ${HOME}/.kube/config:/root/.kube/config \
 -v ${PWD}/images.yaml:/app/images.yaml \
 --rm imagesync:latest \
