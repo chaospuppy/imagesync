@@ -30,7 +30,9 @@ class Transfer:
             proceed = True
             cosign_verifier = None
             for verifier in self.cosign_verifiers:
-                if source.registry() == verifier["registry"] and re.match(verifier.repo, source.repo()):
+                if source.registry() == verifier["registry"] and re.match(
+                    verifier.repo, source.repo()
+                ):
                     proceed = self._cosign_verify(source, pubkey=cosign_verifier["key"])
 
             if proceed:

@@ -15,7 +15,9 @@ class Config(yaml.YAMLObject):
         # Convert exclude in config to Image type
         self.exclude = [Image(image["name"]) for image in exclude]
 
-        self.cosign_verifiers: [CosignVerifier(verifier) for verifier in cosign_verifiers]
+        self.cosign_verifiers: [
+            CosignVerifier(verifier) for verifier in cosign_verifiers
+        ]
 
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -28,11 +30,13 @@ class Config(yaml.YAMLObject):
     def find_unused_images(self, used_images: [Image]) -> [Image]:
         return [image for image in self.images if image not in used_images]
 
+
 @dataclass(frozen=True)
 class CosignVerifier:
     registry: str
     repo: str
     key: str
+
 
 # Override emitter to avoid outputting untrusted python object tags into generated yaml
 yaml.emitter.Emitter.process_tag = lambda self, *args, **kwargs: None
