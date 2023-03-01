@@ -1,4 +1,5 @@
 import subprocess
+import re
 from pathlib import Path
 from ironbank.pipeline.utils.exceptions import GenericSubprocessError
 from ironbank.pipeline.container_tools.cosign import Cosign
@@ -14,7 +15,7 @@ class Transfer:
         self.registry: str = config.destination["registry"]
         self.secure: bool = config.destination["secure"]
         self.images: [Image] = config.images
-        self.cosign_registries = config.cosign
+        self.cosign_verifiers = config.cosign_verifiers
 
     def _cosign_verify(self, image: Image, pubkey: Path):
         try:
@@ -25,24 +26,12 @@ class Transfer:
 
     def execute(self):
         total_images = len(self.images)
-        count = 0
-        for source in self.images:
-            count += 1
+        for count, source in enumerate(self.images):
             proceed = True
-            cosign_registry = next(
-                (
-                    item
-                    for item in self.cosign_registries
-                    if item.get("registry") == source.registry()
-                    and (
-                        item.get("repo") is None
-                        or item.get("repo") == source.repo().split("/")[0]
-                    )
-                ),
-                False,
-            )
-            if cosign_registry:
-                proceed = self._cosign_verify(source, pubkey=cosign_registry.get("key"))
+            cosign_verifier = None
+            for verifier in self.cosign_verifiers:
+                if source.registry() == verifier["registry"] and re.match(verifier.repo, source.repo()):
+                    proceed = self._cosign_verify(source, pubkey=cosign_verifier["key"])
 
             if proceed:
                 destination = Image.new_registry(source, self.registry, self.secure)
