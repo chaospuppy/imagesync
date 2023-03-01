@@ -42,8 +42,10 @@ class CosignVerifier:
     registry: str
     repo: str
     key: str
+
     def __post_init__(self):
         object.__setattr__(self, "key", Path(self.key))
+
 
 # Override emitter to avoid outputting untrusted python object tags into generated yaml
 yaml.emitter.Emitter.process_tag = lambda self, *args, **kwargs: None
