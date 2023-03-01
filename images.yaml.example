@@ -1,0 +1,16 @@
+destination:
+  registry: 192.168.106.2:5000
+  secure: true
+cosign_verifiers:
+  - registry: registry1.dso.mil
+    repo: ironbank/*
+    key: /app/ib-cosign.pub
+  - registry: registry.example.com
+    repo: foo/bar/baz
+    key: /app/example-cosign.pub
+exclude:
+  - docker.io/library/alpine:3
+images: []
+  - docker.io/library/busybox:latest
+include:
+  - docker.io/library/nginx: 1.23.3
