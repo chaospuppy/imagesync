@@ -20,7 +20,7 @@ class Config(yaml.YAMLObject):
             CosignVerifier(
                 registry=verifier["registry"],
                 repo=verifier["repo"],
-                key=Path(verifier["key"]),
+                key=verifier["key"],
             )
             for verifier in cosign_verifiers
         ]
@@ -41,8 +41,9 @@ class Config(yaml.YAMLObject):
 class CosignVerifier:
     registry: str
     repo: str
-    key: Path
-
+    key: str
+    def __post_init__(self):
+        object.__setattr__(self, "key", Path(self.key))
 
 # Override emitter to avoid outputting untrusted python object tags into generated yaml
 yaml.emitter.Emitter.process_tag = lambda self, *args, **kwargs: None
