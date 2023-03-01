@@ -14,7 +14,7 @@ class Transfer:
     def __init__(self, config: Config):
         self.registry: str = config.destination["registry"]
         self.secure: bool = config.destination["secure"]
-        self.images: [Image] = config.images
+        self.images: list[Image] = config.images
         self.cosign_verifiers = config.cosign_verifiers
 
     def _cosign_verify(self, image: Image, pubkey: Path):
@@ -28,12 +28,11 @@ class Transfer:
         total_images = len(self.images)
         for count, source in enumerate(self.images):
             proceed = True
-            cosign_verifier = None
             for verifier in self.cosign_verifiers:
-                if source.registry() == verifier["registry"] and re.match(
+                if source.registry() == verifier.registry and re.match(
                     verifier.repo, source.repo()
                 ):
-                    proceed = self._cosign_verify(source, pubkey=cosign_verifier["key"])
+                    proceed = self._cosign_verify(source, pubkey=verifier.key)
 
             if proceed:
                 destination = Image.new_registry(source, self.registry, self.secure)

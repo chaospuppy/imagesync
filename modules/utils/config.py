@@ -1,5 +1,6 @@
 import yaml
 
+from pathlib import Path
 from dataclasses import dataclass, field
 from .image import Image
 
@@ -15,8 +16,13 @@ class Config(yaml.YAMLObject):
         # Convert exclude in config to Image type
         self.exclude = [Image(image["name"]) for image in exclude]
 
-        self.cosign_verifiers: [
-            CosignVerifier(verifier) for verifier in cosign_verifiers
+        self.cosign_verifiers = [
+            CosignVerifier(
+                registry=verifier["registry"],
+                repo=verifier["repo"],
+                key=Path(verifier["key"]),
+            )
+            for verifier in cosign_verifiers
         ]
 
         for k, v in kwargs.items():
@@ -27,7 +33,7 @@ class Config(yaml.YAMLObject):
             list({Image(image.name) for image in self.images}), key=lambda x: x.name
         )
 
-    def find_unused_images(self, used_images: [Image]) -> [Image]:
+    def find_unused_images(self, used_images: list[Image]) -> list[Image]:
         return [image for image in self.images if image not in used_images]
 
 
@@ -35,7 +41,7 @@ class Config(yaml.YAMLObject):
 class CosignVerifier:
     registry: str
     repo: str
-    key: str
+    key: Path
 
 
 # Override emitter to avoid outputting untrusted python object tags into generated yaml
