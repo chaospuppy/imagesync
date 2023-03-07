@@ -1,4 +1,5 @@
 import subprocess
+import re
 from pathlib import Path
 from ironbank.pipeline.utils.exceptions import GenericSubprocessError
 from ironbank.pipeline.container_tools.cosign import Cosign
@@ -10,30 +11,28 @@ log: logger = logger.setup(name="transfer")
 
 
 class Transfer:
-    def __init__(self, config: Config, pubkey: Path):
+    def __init__(self, config: Config):
         self.registry: str = config.destination["registry"]
         self.secure: bool = config.destination["secure"]
-        self.images: [Image] = config.images
-        self.cosign_public_key = pubkey
+        self.images: list[Image] = config.images
+        self.cosign_verifiers = config.cosign_verifiers
 
-    def _cosign_verify(self, image: Image):
+    def _cosign_verify(self, image: Image, pubkey: Path):
         try:
-            verify = Cosign.verify(image, pubkey=self.cosign_public_key, log_cmd=True)
+            verify = Cosign.verify(image, pubkey, log_cmd=True)
         except GenericSubprocessError:
             verify = False
         return verify
 
     def execute(self):
         total_images = len(self.images)
-        count = 0
-        for source in self.images:
-            count += 1
+        for count, source in enumerate(self.images):
             proceed = True
-            if (
-                source.registry() == "registry1.dso.mil"
-                and source.repo().split("/")[0] == "ironbank"
-            ):
-                proceed = self._cosign_verify(source)
+            for verifier in self.cosign_verifiers:
+                if source.registry() == verifier.registry and re.match(
+                    verifier.repo, source.repo()
+                ):
+                    proceed = self._cosign_verify(source, pubkey=verifier.key)
 
             if proceed:
                 destination = Image.new_registry(source, self.registry, self.secure)
