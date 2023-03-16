@@ -15,5 +15,6 @@ jobs:
         run: python -m pip install semver gitpython
       - name: check-version
         run: |
+          git status
           cd internal
           python3 check-version.py
