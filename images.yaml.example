@@ -9,8 +9,8 @@ cosign_verifiers:
     repo: foo/bar/baz
     key: /app/example-cosign.pub
 exclude:
-  - docker.io/library/alpine:3
-images: []
-  - docker.io/library/busybox:latest
+  - name: docker.io/library/alpine:3
+images:
+  - name: docker.io/library/busybox:latest
 include:
-  - docker.io/library/nginx: 1.23.3
+  - name: docker.io/library/nginx:1.23.3
