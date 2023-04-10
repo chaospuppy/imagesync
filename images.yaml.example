@@ -1,16 +1,31 @@
+# destination configures settings for the destination registry
 destination:
+  # The hostname or IP of the destination registry
   registry: 192.168.106.2:5000
+  # Enable/disable TLS on destination
   secure: true
+# Settings dictating how images are collected
+collection:
+  # image_key specifies an alternate location to check for image names in Pod definitions
+  # This is useful when mutating webhooks are in place to rewrite image names
+  image_name_annotation_key: "my.webhook.annotation/[a-zA-Z0-9]+"
+# Cosign signature validation settings
 cosign_verifiers:
+    # Registry for verifier
   - registry: registry1.dso.mil
+    # Subpath in registry for verifier
     repo: ironbank/*
+    # Cosign key used to verify signatures
     key: /app/ib-cosign.pub
   - registry: registry.example.com
     repo: foo/bar/baz
     key: /app/example-cosign.pub
+# Image names to unconditionally exclude from final "images" key
 exclude:
   - name: docker.io/library/alpine:3
+# Images to be synced
 images:
   - name: docker.io/library/busybox:latest
+# Image names to unconditionally include in final "images" key
 include:
   - name: docker.io/library/nginx:1.23.3
