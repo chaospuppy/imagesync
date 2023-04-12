@@ -63,9 +63,15 @@ def main():
     if args.command == "tidy":
         log.info("Collecting images from cluster...")
         used_images = []
+        collector = collect.Collector(
+            config.collection["image_name_annotation_key"]
+            if config.collection and "image_name_annotation_key" in config.collection
+            else "",
+            args.version,
+        )
 
         try:
-            used_images.extend(collect.cluster_images())
+            used_images.extend(collector.cluster_images())
         except HTTPError as e:
             log.error(f"Error retrieving images from cluster: {e.code} {e.reason}")
             sys.exit(1)
@@ -77,7 +83,7 @@ def main():
             sys.exit(1)
 
         try:
-            used_images.extend(collect.bigbang_images(args.version))
+            used_images.extend(collector.bigbang_images())
         except HTTPError as e:
             log.error(f"Error retreving images.txt from BigBang: {e.code} {e.reason}")
             sys.exit(1)
