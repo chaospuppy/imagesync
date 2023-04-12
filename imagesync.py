@@ -65,7 +65,7 @@ def main():
         used_images = []
         collector = collect.Collector(
             config.collection["image_name_annotation_key"]
-            if "image_name_annotation_key" in config.collection
+            if config.collection and "image_name_annotation_key" in config.collection
             else "",
             args.version,
         )
