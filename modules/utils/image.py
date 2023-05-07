@@ -10,7 +10,7 @@ log: logger = logger.setup(name="Image")
 @dataclass(frozen=True)
 class Image:
     name: str
-    secure: bool = True
+    insecure: bool = True
 
     def __post_init__(self):
         """
@@ -28,26 +28,20 @@ class Image:
     def __repr__(self):
         return self.name
 
-    def digest(self, cache=False):
+    def digest(self):
         log.info("Getting for digest for %s", self.name)
-        cmd = ["skopeo", "inspect", "--raw", f"docker://{self.name}"]
+        cmd = ["crane", "digest", self.name]
 
-        if not self.secure:
-            cmd += ["--tls-verify=false"]
+        if self.insecure:
+            cmd += ["--insecure"]
 
         try:
-            manifest = subprocess.run(cmd, capture_output=True, check=True)
+            digest = subprocess.run(cmd, capture_output=True, check=True)
         except subprocess.CalledProcessError as e:
             log.info("Error while getting digest for %s", self.name)
             return None
 
-        manifest_json = json.loads(manifest.stdout)
-        # TODO: The manifests format returned from the inspect command is inconsistent, so we should build more flexiblity into this
-        try:
-            return manifest_json["config"]["digest"]
-        except KeyError:
-            log.info("Error parsing digest for %s", self.name)
-            return None
+        return digest.stdout
 
     def registry(self):
         return self.name.split("/")[0]
@@ -56,7 +50,7 @@ class Image:
         return "/".join(self.name.split("/")[1:]).split(":")[0]
 
     @classmethod
-    def new_registry(cls, image, registry, secure):
+    def new_registry(cls, image, registry):
         name = image.name.split("/")
         name[0] = registry
-        return cls("/".join(name), secure)
+        return cls("/".join(name))

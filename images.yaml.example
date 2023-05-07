@@ -2,9 +2,10 @@
 destination:
   # The hostname or IP of the destination registry
   registry: 192.168.106.2:5000
-  # Enable/disable TLS on destination
-  secure: true
 # Settings dictating how images are collected
+source:
+  # Enable/disable TLS on source ref fetch
+  insecure: false
 collection:
   # image_key specifies an alternate location to check for image names in Pod definitions
   # This is useful when mutating webhooks are in place to rewrite image names

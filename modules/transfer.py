@@ -13,7 +13,7 @@ log: logger = logger.setup(name="transfer")
 class Transfer:
     def __init__(self, config: Config):
         self.registry: str = config.destination["registry"]
-        self.secure: bool = config.destination["secure"]
+        self.insecure: bool = config.source["insecure"]
         self.images: list[Image] = config.images
         self.cosign_verifiers = config.cosign_verifiers
 
@@ -35,7 +35,7 @@ class Transfer:
                     proceed = self._cosign_verify(source, pubkey=verifier.key)
 
             if proceed:
-                destination = Image.new_registry(source, self.registry, self.secure)
+                destination = Image.new_registry(source, self.registry)
                 cmd = [
                     "crane",
                     "copy",
@@ -43,7 +43,7 @@ class Transfer:
                     destination.name,
                 ]
 
-                cmd += ["--insecure=false"] if not self.secure else []
+                cmd += ["--insecure"] if self.insecure else []
 
                 log.info(f"[{count}/{total_images}] Copying {source} to {destination}")
                 copy_result = subprocess.run(args=cmd, capture_output=True, check=True)
