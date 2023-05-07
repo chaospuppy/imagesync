@@ -37,31 +37,18 @@ class Transfer:
             if proceed:
                 destination = Image.new_registry(source, self.registry, self.secure)
                 cmd = [
-                    "skopeo",
+                    "crane",
                     "copy",
-                    f"docker://{source.name}",
-                    f"docker://{destination.name}",
+                    source.name,
+                    destination.name,
                 ]
 
-                cmd += ["--dest-tls-verify=false"] if not self.secure else []
+                cmd += ["--insecure=false"] if not self.secure else []
 
                 log.info(f"[{count}/{total_images}] Copying {source} to {destination}")
-                source_digest = source.digest()
-                destination_digest = destination.digest()
-                if (
-                    not source_digest
-                    or not destination_digest
-                    or (source_digest != destination_digest)
-                ):
-                    copy_result = subprocess.run(
-                        args=cmd, capture_output=True, check=True
-                    )
-                    log.info(copy_result.stdout.decode())
-                else:
-                    log.info(
-                        "Source and destination digests match, skipping sync for %s",
-                        source.name,
-                    )
+                copy_result = subprocess.run(args=cmd, capture_output=True, check=True)
+                log.info(copy_result.stdout.decode())
+
             else:
                 log.info(
                     "Image skipped due to failed cosign verification: %s", source.name
