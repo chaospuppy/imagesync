@@ -11,7 +11,7 @@ jobs:
       - name: docker-login
         run: |
           echo "${{ secrets.CHAOSPUPPY_DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.CHAOSPUPPY_DOCKERHUB_USERNAME }} --password-stdin
-          echo "${{ secrets.CHAOSPUPPY_REGISTRY1_TOKEN }}" | docker login -u ${{ secrets.CHAOSPUPPY_REGISTRY1_USERNAME }} --password-stdin
+          echo "${{ secrets.CHAOSPUPPY_REGISTRY1_TOKEN }}" | docker login registry1.dso.mil -u ${{ secrets.CHAOSPUPPY_REGISTRY1_USERNAME }} --password-stdin
       # - name: build-arm64-image
       #   run: ARCH=arm64 make build
       #   if: ${{ github.ref_type == 'tag' }}
