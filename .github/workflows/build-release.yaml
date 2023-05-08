@@ -32,7 +32,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: create-artifact
-        run: ARCH=amd64 IMAGE_REPO='docker.io/chaospuppy' IMAGE_NAME='imagesync' make artifact
+        run: |
+          echo "${{ secrets.CHAOSPUPPY_REGISTRY1_TOKEN }}" | docker login registry1.dso.mil -u ${{ secrets.CHAOSPUPPY_REGISTRY1_USERNAME }} --password-stdin
+          ARCH=amd64 IMAGE_REPO='docker.io/chaospuppy' IMAGE_NAME='imagesync' make artifact
         if: ${{ github.ref_type == 'tag' }}
       - name: create-release
         uses: "marvinpinto/action-automatic-releases@latest"
