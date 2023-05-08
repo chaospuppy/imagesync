@@ -1,29 +1,34 @@
-FROM quay.io/skopeo/stable:latest
+FROM registry1.dso.mil/ironbank/opensource/python:v3.11.3
 
 ARG KUBECTL_VERSION="v1.23.5"
 ARG COSIGN_VERSION="1.13.1"
 
-ENV REGISTRY_AUTH_FILE=/root/.docker/config.json
+USER 0
 
-RUN mkdir /app /root/.kube/ \
-  && dnf install unzip -y \
+COPY --chown=1001:1001 . /app/
+
+WORKDIR /tmp
+RUN dnf install unzip git -y \
   && curl -LO "https://github.com/sigstore/cosign/releases/download/v1.13.1/cosign-linux-amd64" \
   && chmod 755 cosign-linux-amd64 \
   && mv cosign-linux-amd64 /usr/local/bin/cosign \
+  && curl -sL "https://github.com/google/go-containerregistry/releases/download/v0.15.1/go-containerregistry_Linux_x86_64.tar.gz" > go-containerregistry.tar.gz \
+  && tar xvzf go-containerregistry.tar.gz \
+  && chmod 755 crane \
+  && mv crane /usr/local/bin/ \
+  && curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl" \
+  && install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl \
+  && curl -LO https://amazon-ecr-credential-helper-releases.s3.us-east-2.amazonaws.com/0.6.0/linux-amd64/docker-credential-ecr-login \
+  && chmod 755 docker-credential-ecr-login \
+  && mv docker-credential-ecr-login /usr/local/bin/ \
   && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
   && unzip awscliv2.zip \
   && ./aws/install
 
-COPY . /app/
+USER 1001
+
 WORKDIR /app/
-
 RUN curl -sSL https://install.python-poetry.org | python3 - \
-  && /root/.local/bin/poetry install --only main \
-  && curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl" \
-  && install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+  && pip install .
 
-RUN curl -LO https://amazon-ecr-credential-helper-releases.s3.us-east-2.amazonaws.com/0.6.0/linux-amd64/docker-credential-ecr-login \
-  && chmod 755 docker-credential-ecr-login \
-  && mv docker-credential-ecr-login /usr/local/bin/
-
-ENTRYPOINT ["/root/.local/bin/poetry", "run", "/app/imagesync.py"]
+ENTRYPOINT ["python3", "/app/imagesync.py"]
