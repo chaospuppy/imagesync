@@ -2,7 +2,7 @@ import re
 import subprocess
 import json
 from dataclasses import dataclass, field
-from modules.utils import logger
+from common.utils import logger
 
 log: logger = logger.setup(name="Image")
 

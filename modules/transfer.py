@@ -1,11 +1,11 @@
 import subprocess
 import re
 from pathlib import Path
-from ironbank.pipeline.utils.exceptions import GenericSubprocessError
-from ironbank.pipeline.container_tools.cosign import Cosign
+from pipeline.utils.exceptions import GenericSubprocessError
+from pipeline.container_tools.cosign import Cosign
 from .utils.config import Config
 from .utils.image import Image
-from modules.utils import logger
+from common.utils import logger
 
 log: logger = logger.setup(name="transfer")
 
