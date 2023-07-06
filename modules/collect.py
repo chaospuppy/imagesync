@@ -8,7 +8,7 @@ import requests
 
 from dataclasses import dataclass
 from .utils.image import Image
-from modules.utils import logger
+from common.utils import logger
 
 log: logger = logger.setup(name="collect")
 

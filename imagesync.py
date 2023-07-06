@@ -14,9 +14,9 @@ from requests.exceptions import HTTPError
 from json import JSONDecodeError
 
 from modules import collect, transfer
-from modules.utils import logger
 from modules.utils.config import Config
 from modules.utils.image import Image
+from common.utils import logger
 
 log: logger = logger.setup()
 
