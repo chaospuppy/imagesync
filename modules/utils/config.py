@@ -33,7 +33,7 @@ class Config(yaml.YAMLObject):
             list({Image(image.name) for image in self.images}), key=lambda x: x.name
         )
 
-    def find_unused_images(self, used_images: list[Image]) -> list[Image]:
+    def unused_images(self, used_images: list[Image]) -> list[Image]:
         return [image for image in self.images if image not in used_images]
 
 

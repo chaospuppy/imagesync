@@ -19,7 +19,7 @@ BIGBANG_IMAGES_URL = (
 
 @dataclass(frozen=True, slots=True)
 class Collector:
-    image_name_annotation_key: str
+    image_name_annotation_key: str = ""
     bigbang_version: str = ""
 
     def bigbang_images(self) -> list[str]:
