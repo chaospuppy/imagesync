@@ -1,4 +1,4 @@
-OS ?= $(shell uname | awk '{print tolower($0)}')
+OS ?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
 ARCH ?= $(shell uname -m)
 VERSION = $(shell cat VERSION)
 IMAGE_REPO ?= localhost:5000

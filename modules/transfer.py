@@ -4,11 +4,10 @@ import re
 from pathlib import Path
 from pipeline.utils.exceptions import GenericSubprocessError
 from pipeline.container_tools.cosign import Cosign
-from .utils.config import Config
 from .utils.image import Image
 from common.utils import logger
 
-log: logger = logger.setup(name="transfer")
+log = logger.setup(name="transfer")
 
 
 class Transfer:
@@ -32,15 +31,15 @@ class Transfer:
             verifier = self._select_verifier(source)
             if verifier:
                 try:
-                    verified = Cosign.verify(
-                        source,
+                    Cosign.verify(
+                        image=source,
                         docker_config_dir=Path(f"{Path.home().as_posix()}/.docker/"),
                         use_key=True,
                         pubkey=verifier.key,
                         log_cmd=True,
                     )
                 except GenericSubprocessError:
-                    log.warn(
+                    log.warning(
                         "Image skipped due to failed cosign verification: %s",
                         source.name,
                     )

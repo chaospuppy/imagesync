@@ -6,8 +6,6 @@ import os
 import sys
 import argparse
 import pathlib
-import copy
-
 
 from subprocess import CalledProcessError
 from requests.exceptions import HTTPError
@@ -17,9 +15,9 @@ from modules.collect import Collector
 from modules.transfer import Transfer
 from modules.utils.config import Config
 from modules.utils.image import Image
-from common.utils import logger
+from common.utils import logger as iblogger
 
-log: logger = logger.setup()
+log = iblogger.setup()
 
 
 def main():
@@ -77,7 +75,7 @@ def main():
         try:
             used_images = collector.cluster_images()
         except HTTPError as e:
-            log.error(f"Error retrieving images from cluster: {e.code} {e.reason}")
+            log.error(f"Error retrieving images from cluster: {e.response.status_code} {e.response.reason}")
             sys.exit(1)
         except CalledProcessError as e:
             log.error(f"Error returned from query: {e.stderr}")
@@ -91,7 +89,7 @@ def main():
                 used_images.extend(collector.bigbang_images())
             except HTTPError as e:
                 log.error(
-                    f"Error retreving images.txt from BigBang: {e.code} {e.reason}"
+                    f"Error retreving images.txt from BigBang: {e.response.status_code} {e.response.reason}"
                 )
                 sys.exit(1)
 

@@ -1,10 +1,10 @@
 # Imagesync
 The script in this directory, `imagesync.py` is used to both manage and transfer images from external registries (such as registry1, docker, quay, etc.)
-to the registry specified in the `destination.registry` key of `ecr.yaml`.
+to the registry specified in the `destination.registry` key of `images.yaml`.
 
 There are two main functions this script provides:
-- **tidy**: The `tidy` command will consume the `ecr.yaml` file specified with the `-f` flag and locate images that are either unused or missing from it.
-- **sync**: The `sync` command syncs the images in the `images` key of `ecr.yaml` to the registry specified by `destination.registry` (or the `--registry` flag, if passed)
+- **tidy**: The `tidy` command will consume the `images.yaml` file specified with the `-f` flag and locate images that are either unused or missing from it.
+- **sync**: The `sync` command syncs the images in the `images` key of `images.yaml` to the registry specified by `destination.registry` (or the `--registry` flag, if passed)
 
 ## Build
 The Dockerfile in this directory will create an image that has imagesync.py and all its dependencies available.
@@ -46,8 +46,8 @@ If you wish to use the image built by commands in the `Build` section of this RE
 
 ```
 docker run \
--v ${HOME}/.docker/:/root/.docker/ \
--v ${HOME}/.kube/config:/root/.kube/config \
+-v ${HOME}/.docker/:/home/python/.docker/ \
+-v ${HOME}/.kube/config:/home/python/.kube/config \
 -v ${PWD}/images.yaml:/app/images.yaml \
 --rm imagesync:latest \
 -f /app/images.yaml \
