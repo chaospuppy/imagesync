@@ -66,9 +66,12 @@ def main():
     if args.command == "tidy":
         log.info("Collecting images from cluster...")
         collector = Collector(
-            config.collection["image_name_annotation_key"]
-            if config.collection and "image_name_annotation_key" in config.collection
-            else "",
+            (
+                config.collection["image_name_annotation_key"]
+                if config.collection
+                and "image_name_annotation_key" in config.collection
+                else ""
+            ),
             args.bigbang_version,
         )
 
