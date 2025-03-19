@@ -11,7 +11,7 @@ requests = "^2.28.1"
 ibmodules = {git = "https://repo1.dso.mil/ironbank-tools/ironbank-modules.git", subdirectory = "ironbank", tag = "0.0.3", python = ">=3.11"}
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.3.0"
+black = "^25.1.0"
 neovim = "^0.3.1"
 
 [build-system]
