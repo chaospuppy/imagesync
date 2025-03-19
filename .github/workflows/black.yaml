@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.12.2'
       - name: install-black
         run: python -m pip install black
       - name: black-check
