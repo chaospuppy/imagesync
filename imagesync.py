@@ -75,7 +75,9 @@ def main():
         try:
             used_images = collector.cluster_images()
         except HTTPError as e:
-            log.error(f"Error retrieving images from cluster: {e.response.status_code} {e.response.reason}")
+            log.error(
+                f"Error retrieving images from cluster: {e.response.status_code} {e.response.reason}"
+            )
             sys.exit(1)
         except CalledProcessError as e:
             log.error(f"Error returned from query: {e.stderr}")
